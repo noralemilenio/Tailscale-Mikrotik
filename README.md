@@ -1,6 +1,6 @@
 # Tailscale subnet router for MikroTik hEX S ARMv5 (E60iUGS)
 
-**Status: experimental — not production-certified.** This repository contains reproducible build files, a minimal Tailscale container, and a **manual** RouterOS configuration template. Source and binaries have had limited checks; **end-to-end ARMv5 runtime, TUN forwarding, remote access, reboot recovery and failover are not yet certified.** Do not replace an existing working subnet router until those tests succeed.
+**Status: ARMv5 hardware and remote-subnet routing validated on hEX S E60iUGS; still experimental pending long-term resilience/security tests.** This repository contains reproducible build files, a minimal Tailscale container, and a **manual** RouterOS configuration template. Source and binaries have had limited checks; **ARMv5 runtime, TUN forwarding, remote LAN access and reboot persistence have since been tested on real hardware. Long-term resilience, firewall hardening, failover, image update and performance certification remain open.** Do not replace an existing working subnet router until those tests succeed.
 
 ## Target
 
@@ -17,10 +17,10 @@ The project compiles Tailscale **v1.104.7** with Go **1.27.4**, `CGO_ENABLED=0 G
 | Compare image binaries byte-by-byte with compiled originals | PASS (lab prototype) |
 | Check shell syntax | PASS\n| Isolated launcher smoke test, Linux/amd64 userspace mode (no authentication, no routes) | PASS; daemon answered `Logged out` |
 | Build complete image with this launcher | Lab prototype packaged; final route/container execution NOT TESTED |
-| Start ARMv5 binary on E60iUGS | NOT TESTED |
-| Linux TUN + packet forwarding and RouterOS firewall/NAT | NOT TESTED |
-| Tailscale remote LAN access + split DNS + persistence | NOT TESTED |
-| Reboot, upgrade, rollback and failover from old router | NOT TESTED |
+| Start ARMv5 binary on E60iUGS | PASS |
+| Linux TUN + remote LAN routing | PASS (external client to LAN host); firewall hardening still open |
+| Tailscale remote LAN access and reboot persistence | PASS; remote split DNS still open |
+| Reboot persistence | PASS; upgrade, rollback and failover NOT TESTED |
 
 ## Reproducible build
 
@@ -54,7 +54,7 @@ Tailscale clients
 - External storage for container root/state is strongly recommended. Confirm `/system device-mode`, `/disk`, free space, and the correct RouterOS `container` package/version before installation.
 - Authentication keys must never be committed to Git or included inside an image. Use a short-lived enrollment key via a protected provisioning workflow and persistent state.
 
-See [docs/routeros-example.rsc](docs/routeros-example.rsc) for a commented preparation template. It is NOT an unattended installer.
+See [Guía reproducible ARMv5](docs/ARMV5-GUIA-REPRODUCIBLE.md) for the exact generic build and migration procedure, and [docs/routeros-example.rsc](docs/routeros-example.rsc) for a commented preparation template. It is NOT an unattended installer.
 
 ## Testing and migration policy
 
