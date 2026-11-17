@@ -1,0 +1,8 @@
+dist/
+*.tar
+*.tar.gz
+*.log
+.env
+state/
+secrets/
+*.backup
