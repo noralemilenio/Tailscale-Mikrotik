@@ -1,6 +1,8 @@
 #!/bin/sh
 # RouterOS container: Tailscale subnet router. No credentials embedded in image.
 set -eu
+PATH="/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"
+export PATH
 STATE_DIR="${TS_STATE_DIR:-/var/lib/tailscale}"
 SOCKET_DIR=/var/run/tailscale
 SOCKET="$SOCKET_DIR/tailscaled.sock"
@@ -16,7 +18,7 @@ else
   echo 1 >/proc/sys/net/ipv4/ip_forward
   TUN=tailscale0
 fi
-/usr/local/bin/tailscaled --tun="$TUN" --socket="$SOCKET" --state="$STATE_DIR/tailscaled.state" &
+tailscaled --tun="$TUN" --socket="$SOCKET" --state="$STATE_DIR/tailscaled.state" &
 PID=$!
 stop() { kill "$PID" 2>/dev/null || :; wait "$PID" 2>/dev/null || :; }
 trap stop INT TERM EXIT
@@ -32,9 +34,9 @@ if [ "${TS_TEST_USERSPACE:-0}" = "1" ]; then
 else
   # Avoid stale fail-open routing: subnet is advertised only after tailscale up succeeds.
   if [ -n "${TS_AUTHKEY:-}" ]; then
-    /usr/local/bin/tailscale --socket="$SOCKET" up --authkey="$TS_AUTHKEY" --advertise-routes="$ROUTES" --netfilter-mode=off --accept-dns=false --accept-routes=false
+    tailscale --socket="$SOCKET" up --authkey="$TS_AUTHKEY" --advertise-routes="$ROUTES" --netfilter-mode=off --accept-dns=false --accept-routes=false
   else
-    /usr/local/bin/tailscale --socket="$SOCKET" up --advertise-routes="$ROUTES" --netfilter-mode=off --accept-dns=false --accept-routes=false
+    tailscale --socket="$SOCKET" up --advertise-routes="$ROUTES" --netfilter-mode=off --accept-dns=false --accept-routes=false
   fi
 fi
 wait "$PID"
