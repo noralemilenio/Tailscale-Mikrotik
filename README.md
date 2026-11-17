@@ -15,22 +15,22 @@ The project compiles Tailscale **v1.104.7** with Go **1.27.4**, `CGO_ENABLED=0 G
 | Compile Tailscale CLI and daemon (v1.104.7 / Go 1.27.4 / GOARM=5) | PASS |
 | Inspect ELF and Go metadata (`GOARM=5`, static) | PASS |
 | Compare image binaries byte-by-byte with compiled originals | PASS (lab prototype) |
-| Check shell syntax | PASS |
-| Build complete image with this launcher | Lab in progress; see project status |
+| Check shell syntax | PASS\n| Isolated launcher smoke test, Linux/amd64 userspace mode (no authentication, no routes) | PASS; daemon answered `Logged out` |
+| Build complete image with this launcher | Lab prototype packaged; final route/container execution NOT TESTED |
 | Start ARMv5 binary on E60iUGS | NOT TESTED |
-| Linux TUN + packet forwarding and router firewall/NAT | NOT TESTED |
+| Linux TUN + packet forwarding and RouterOS firewall/NAT | NOT TESTED |
 | Tailscale remote LAN access + split DNS + persistence | NOT TESTED |
 | Reboot, upgrade, rollback and failover from old router | NOT TESTED |
 
 ## Reproducible build
 
-Requirements: Docker with the **Buildx** plugin and support for pulling/building `linux/arm/v5`, access to the Go image, and `file` and `sha256sum`. Run:
+Requirements: standard Docker Engine (Buildx **not required**), support for pulling `linux/arm/v5`, internet access to the Go module proxy and image registry, and `file`, `sha256sum`, `ca-certificates` on the build host. Run:
 
 ```bash
 bash scripts/build.sh
 ```
 
-This creates `dist/tailscale`, `dist/tailscaled`, SHA-256 manifests and an image TAR for import to RouterOS. The build is **pinned to v1.104.7** rather than `latest` to avoid unexpected changes in Go requirements. Users should inspect the output image's `architecture` and inspect binaries (`go version -m`) before importing. A Docker manifest with generic `linux/arm` metadata is **not sufficient evidence of ARMv5 compatibility**; use `GOARM=5` metadata and an actual device test.
+This creates `dist/tailscale`, `dist/tailscaled`, SHA-256 manifests and an image TAR for import to RouterOS. The builder uses `docker create`, `docker cp`, `docker commit` and `docker save` without running ARM binaries on the x86 build machine. GitHub source files are checked for shell syntax before packaging; the script marks the entrypoint executable. The build is **pinned to v1.104.7** rather than `latest` to avoid unexpected changes in Go requirements. Users should inspect the output image's `architecture` and inspect binaries (`go version -m`) before importing. A Docker manifest with generic `linux/arm` metadata is **not sufficient evidence of ARMv5 compatibility**; use `GOARM=5` metadata and an actual device test.
 
 ## Planned network topology
 
