@@ -1,0 +1,23 @@
+{
+  "schema": "continuity-project/1",
+  "id": "tailscale-mikrotik",
+  "title": "Tailscale en MikroTik hEX S",
+  "group": "pendientes",
+  "status": "Piloto ARMv5 validado",
+  "summary": "Piloto ARMv5 validado.",
+  "objective": "Ejecutar Tailscale como router de subred en MikroTik hEX S ARMv5.",
+  "scope": "Cubre compilación, configuración y ensayos en hardware. Las pruebas prolongadas siguen abiertas.",
+  "docs": [
+    {
+      "repo": "noralemilenio/Tailscale-Mikrotik",
+      "path": "README.md"
+    }
+  ],
+  "tasks": [
+    {
+      "repo": "noralemilenio/Tailscale-Mikrotik",
+      "path": "README.md",
+      "label": "Documentación y siguientes tareas"
+    }
+  ]
+}
